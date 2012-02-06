@@ -1,0 +1,56 @@
+<h1><%= link_to "Chat Increible", root_path %></h1>
+<ul id="chat_container">
+<% @messages.each do |message| %>
+  <li>
+	<%= message.name %> dijo <%= message.content %>
+  </li>
+<% end %>
+</ul>
+<br />
+
+<div class="ui-resizable">
+   <div style="-moz-user-select: none;" unselectable="on" class="ui-resizable-handle ui-resizable-e"></div>
+   <div style="-moz-user-select: none;" unselectable="on" class="ui-resizable-handle ui-resizable-s"></div>
+   <div unselectable="on" style="z-index: 1001; -moz-user-select: none;" class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se"></div>
+</div>
+
+<%= form_for(Message.new, :remote => true) do |f| %>
+  <div class="clearfix">
+    <%= f.label :name %><br />
+    <%= f.text_field :name %>
+  </div>
+  <div class="ui-resizable">
+   <div style="-moz-user-select: none;" unselectable="on" class="ui-resizable-handle ui-resizable-e"></div>
+   <div style="-moz-user-select: none;" unselectable="on" class="ui-resizable-handle ui-resizable-s"></div>
+   <div unselectable="on" style="z-index: 1001; -moz-user-select: none;" class="ui-resizable-handle ui-resizable-se ui-icon ui-icon-gripsmall-diagonal-se"></div>
+    <%= f.label :mensaje %><br />
+    <%= f.text_area :content %>
+  </div>
+  <input type="text" name="date" id="date" />
+  <div class="actions">
+    <%= f.submit %>
+  </div>
+<% end %>
+ <script type="text/javascript">
+    // Enable pusher logging - don't include this in production
+    Pusher.log = function(message) {
+      if (window.console && window.console.log) window.console.log(message);
+    };
+
+    // Flash fallback logging - don't include this in production
+    WEB_SOCKET_DEBUG = true;
+
+    var pusher = new Pusher('c0b97835ccce8d568a10');
+    var channel = pusher.subscribe('demoChat');
+    channel.bind('message:create', function(data) {
+      var message = "<li id='message_" + data.id +"' >" 
+         message += data.name + ": " + data.content
+         message += "</li>"
+
+      $("#chat_container").append(message);
+      $("#message_content").val("");
+      $("#message_content").focus();
+  
+    });
+  </script>
+  
